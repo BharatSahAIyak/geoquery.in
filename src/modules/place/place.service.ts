@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { CreatePlaceDto, SearchPlaceDto } from "./dto/place.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { Prisma } from "@prisma/client";
