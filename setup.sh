@@ -24,7 +24,7 @@ else
     elif [[ "$(uname)" == "Linux" ]]; then
         echo "Linux detected. Installing wget2 using apt..."
         # Update package list and install wget2 using apt
-        sudo apt update
+        sudo apt update -y
         sudo apt install wget2 -y
     else
         echo "Unsupported OS detected."

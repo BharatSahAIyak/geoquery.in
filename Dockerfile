@@ -1,5 +1,5 @@
 FROM node:18-slim as base
-RUN apt-get update -y && apt-get install -y openssl
+RUN apt-get update -y && apt-get install -y openssl && apt-get install -y wget2 && apt-get install -y curl && apt-get install -y git
 
 FROM base AS install
 WORKDIR /app
