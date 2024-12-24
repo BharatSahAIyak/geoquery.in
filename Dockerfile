@@ -18,7 +18,7 @@ FROM base as data
 WORKDIR /app
 COPY --from=install /app/node_modules ./node_modules
 COPY . .
-COPY ./src ./src
+RUN sed -i 's/\r$//' ./setup.sh
 RUN chmod +x ./setup.sh
 RUN ./setup.sh
 
@@ -29,7 +29,8 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/prisma ./prisma
 COPY --from=data /app/db.mmdb ./db.mmdb
-COPY --from=data /app/src ./src
+COPY --from=data /app/src/geojson-data ./src/geojson-data
+COPY ./src ./src
 COPY tsconfig.json ./tsconfig.json
 EXPOSE 3000
 

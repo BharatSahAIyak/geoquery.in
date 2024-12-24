@@ -26,7 +26,6 @@ else
         # Update package list and install wget2 using apt
         sudo apt update -y
         sudo apt install wget2 -y
-        wget2 --help
     else
         echo "Unsupported OS detected."
         exit 1
@@ -72,3 +71,10 @@ mv ./mh ./maharashtra
 mv ./or ./odisha
 mv ./rj ./rajasthan
 mv ./sk ./sikkim
+
+# Changing PWD back to /src/
+cd ../..
+
+# Updating geoJSON files through script to make them usable in src
+cd ./scripts
+npx ts-node parse.geojson.ts

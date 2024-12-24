@@ -80,5 +80,5 @@ model Place {
   name     String
   type     String
   tag      String
-  location Unsupported("geometry(Point, 4326)")
+  location Unsupported("geography(Point, 4326)")
 }

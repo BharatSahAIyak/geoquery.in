@@ -12,7 +12,7 @@
     "start:dev": "stencil start --watch",
     "start:debug": "stencil start --debug --watch",
     "start:prod": "NODE_ENV=production node dist/main",
-    "migrate:ingest:start:prod": "npx ts-node parse.geojson.ts && npx ts-node src/scripts/ingestors/state.geojson.ts && npx ts-node src/scripts/ingestors/district.geojson.ts && npx ts-node src/scripts/ingestors/subdistrict.geojson.ts && npm run migrate:start:prod",
+    "migrate:ingest:start:prod": "npx ts-node src/scripts/ingestors/state.geojson.ts && npx ts-node src/scripts/ingestors/district.geojson.ts && npx ts-node src/scripts/ingestors/subdistrict.geojson.ts && npm run migrate:start:prod",
     "migrate:start:prod": "npx prisma migrate deploy && npm run start:prod",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
