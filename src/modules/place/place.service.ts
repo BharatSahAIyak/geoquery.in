@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CreatePlaceDto, SearchPlaceDto } from "./dto/place.dto";
 import { PrismaService } from "../prisma/prisma.service";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class PlaceService {
@@ -10,43 +11,49 @@ export class PlaceService {
 
     async createPlace(createPlaceDto: CreatePlaceDto): Promise<any> {
         const { name, type, tag, lat, lon } = createPlaceDto;
-        const point = `ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)`;
-        this.logger.debug(`Adding place ${createPlaceDto}`)
-        return this.prisma.$executeRawUnsafe(
-            `INSERT INTO "Place" (name, type, tag, location) VALUES ($1, $2, $3, ${point})`,
-            name,
-            type,
-            tag,
-        );
+    
+        const query = `
+            INSERT INTO "Place" (name, type, tag, location)
+            VALUES ($1, $2, $3, ST_SetSRID(ST_MakePoint($4, $5), 4326)::geography)
+        `;
+    
+        this.logger.debug(`Adding place: ${JSON.stringify(createPlaceDto)}`);
+        return this.prisma.$executeRawUnsafe(query, name, type, tag, lon, lat);
     }
+    
+    
+
 
     async searchPlaces(searchPlaceDto: SearchPlaceDto): Promise<any> {
-        const { geofenceBoundary, name, tag, type } = searchPlaceDto;
-
-        // Create a polygon for the geofence
-        const polygon = `ST_MakePolygon(ST_GeomFromText('LINESTRING(${geofenceBoundary
-            .map((point) => point.join(' '))
-            .join(', ')}, ${geofenceBoundary[0].join(' ')})', 4326))`;
-
-        // Base query for filtering places
-        let query = `
+        const { origin, distance, name, tag, type } = searchPlaceDto;
+    
+        if (!origin || !distance) {
+            throw new Error('Origin and distance are required for radial searches.');
+        }
+    
+        const [longitude, latitude] = origin;
+    
+        // Construct the base query
+        let query = Prisma.sql`
             SELECT id, name, type, tag, ST_AsText(location::geometry) as location
             FROM "Place"
-            WHERE ST_Within(location, ${polygon})
+            WHERE ST_DWithin(location, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography, ${distance})
         `;
-
-        // Add optional filters
+    
+        // Add filters dynamically
         if (name) {
-            query += ` AND name ILIKE '%${name}%'`;
+            query = Prisma.sql`${query} AND name ILIKE ${`%${name}%`}`;
         }
-        else if (tag) {
-            query += ` AND tag ILIKE '%${tag}%'`;
+        if (tag) {
+            query = Prisma.sql`${query} AND tag ILIKE ${`%${tag}%`}`;
         }
-        else if (type) {
-            query += ` AND type ILIKE '%${type}%'`;
+        if (type) {
+            query = Prisma.sql`${query} AND type ILIKE ${`%${type}%`}`;
         }
-
-        // Execute the query
-        return this.prisma.$queryRawUnsafe(query);
+    
+        this.logger.debug(`Executing search query: ${query.statement}`);
+        return this.prisma.$queryRaw(query);
     }
+    
+    
 }

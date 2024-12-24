@@ -18,19 +18,28 @@ export class CreatePlaceDto {
 }
 
 export class SearchPlaceDto {
+    @ValidateIf((dto) => !dto.geofenceBoundary)
     @IsArray()
-    @IsNotEmpty()
-    geofenceBoundary: number[][]; // Array of [lon, lat] pairs defining the geofence (polygon)
-  
+    origin?: [number, number]; // [longitude, latitude]
+
+    @ValidateIf((dto) => !dto.geofenceBoundary)
+    @IsNumber()
+    distance?: number; // Distance in meters
+
+    @ValidateIf((dto) => !dto.origin || !dto.distance)
+    @IsArray()
+    geofenceBoundary?: number[][]; // Polygon boundary
+
     @IsOptional()
     @IsString()
     name?: string;
-  
+
     @IsOptional()
     @IsString()
     tag?: string;
-  
+
     @IsOptional()
     @IsString()
     type?: string;
-  }
+}
+
