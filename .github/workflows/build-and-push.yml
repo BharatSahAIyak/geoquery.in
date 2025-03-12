@@ -51,7 +51,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           # build-args: 
-          context: .
+          context: "server/."
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
