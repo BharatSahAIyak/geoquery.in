@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - deployment/stable-geoip
 
 env:
   DOCKER_USERNAME: ${{ github.actor }}
