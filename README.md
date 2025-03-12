@@ -68,7 +68,7 @@ Once the Docker container is running, you can interact with the application usin
     docker ps
     ```
     
-    This command will display a list of running Docker containers along with their details. Store "Container ID"
+    This command will display a list of running Docker containers along with their details. Store "Container ID".
 
 2. Retrieve Container IP Address
 
